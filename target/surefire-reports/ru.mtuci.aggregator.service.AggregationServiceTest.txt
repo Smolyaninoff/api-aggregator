@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: ru.mtuci.aggregator.service.AggregationServiceTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.239 s -- in ru.mtuci.aggregator.service.AggregationServiceTest

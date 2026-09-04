@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AggregatedRecord.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">api-aggregator-stage1</a> &gt; <a href="index.source.html" class="el_package">ru.mtuci.aggregator.model</a> &gt; <span class="el_source">AggregatedRecord.java</span></div><h1>AggregatedRecord.java</h1><pre class="source lang-java linenums">package ru.mtuci.aggregator.model;
+
+import java.time.Instant;
+import java.util.Map;
+import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class AggregatedRecord {
+    private final String id;
+    private final String source;
+    private final Instant timestamp;
+    private final Map&lt;String, Object&gt; data;
+
+    @JsonCreator
+    public AggregatedRecord(
+            @JsonProperty(&quot;id&quot;) String id,
+            @JsonProperty(&quot;source&quot;) String source,
+            @JsonProperty(&quot;timestamp&quot;) Instant timestamp,
+<span class="fc" id="L21">            @JsonProperty(&quot;data&quot;) Map&lt;String, Object&gt; data) {</span>
+<span class="pc bpc" id="L22" title="1 of 2 branches missed.">        this.id = id != null ? id : UUID.randomUUID().toString();</span>
+<span class="fc" id="L23">        this.source = source;</span>
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">        this.timestamp = timestamp != null ? timestamp : Instant.now();</span>
+<span class="fc" id="L25">        this.data = data;</span>
+<span class="fc" id="L26">    }</span>
+
+<span class="fc" id="L28">    public AggregatedRecord(String source, Map&lt;String, Object&gt; data) {</span>
+<span class="fc" id="L29">        this.id = UUID.randomUUID().toString();</span>
+<span class="fc" id="L30">        this.source = source;</span>
+<span class="fc" id="L31">        this.timestamp = Instant.now();</span>
+<span class="fc" id="L32">        this.data = data;</span>
+<span class="fc" id="L33">    }</span>
+
+<span class="fc" id="L35">    public String getId() { return id; }</span>
+<span class="fc" id="L36">    public String getSource() { return source; }</span>
+<span class="fc" id="L37">    public Instant getTimestamp() { return timestamp; }</span>
+<span class="fc" id="L38">    public Map&lt;String, Object&gt; getData() { return data; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OpenMeteoProvider.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">api-aggregator-stage1</a> &gt; <a href="index.source.html" class="el_package">ru.mtuci.aggregator.api.impl</a> &gt; <span class="el_source">OpenMeteoProvider.java</span></div><h1>OpenMeteoProvider.java</h1><pre class="source lang-java linenums">package ru.mtuci.aggregator.api.impl;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import ru.mtuci.aggregator.api.ApiProvider;
+
+<span class="fc" id="L11">public class OpenMeteoProvider implements ApiProvider {</span>
+    private static final String BASE_URL = &quot;https://api.open-meteo.com/v1/forecast&quot;;
+
+    @Override
+    public String getName() {
+<span class="fc" id="L16">        return &quot;open-meteo&quot;;</span>
+    }
+
+    @Override
+    public Map&lt;String, String&gt; getDefaultParams() {
+<span class="nc" id="L21">        return Map.of(</span>
+                &quot;latitude&quot;, &quot;55.75&quot;,
+                &quot;longitude&quot;, &quot;37.62&quot;,
+                &quot;current_weather&quot;, &quot;true&quot;,
+                &quot;hourly&quot;, &quot;temperature_2m&quot;
+        );
+    }
+
+    @Override
+    public URI buildUri(Map&lt;String, String&gt; params) {
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        Map&lt;String, String&gt; effective = params.isEmpty() ? getDefaultParams() : params;</span>
+<span class="nc" id="L32">        String query = effective.entrySet().stream()</span>
+<span class="nc" id="L33">                .map(e -&gt; URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8)</span>
+<span class="nc" id="L34">                        + &quot;=&quot; + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))</span>
+<span class="nc" id="L35">                .collect(Collectors.joining(&quot;&amp;&quot;));</span>
+<span class="nc" id="L36">        return URI.create(BASE_URL + &quot;?&quot; + query);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

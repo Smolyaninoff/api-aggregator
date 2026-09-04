@@ -1,0 +1,3 @@
+id,source,timestamp,status,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query
+e2907168-9b93-4877-b417-220193014e5b,ip-api,2026-06-18T13:20:15.145630Z,success,Russia,RU,SPE,St.-Petersburg,St Petersburg,,60.0075,30.3731,Europe/Moscow,SPBSPU,St.Petersburg State Polytechnical University,AS39503 Peter the Great St. Petersburg Polytechnic University,194.190.225.41
+6aa1f482-753d-45f2-900e-c0d9b8e2552e,jsonplaceholder,2026-06-18T13:20:15.202325Z,,,,,,,,,,,,,,

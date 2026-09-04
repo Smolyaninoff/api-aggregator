@@ -1,0 +1,10 @@
+ru/mtuci/aggregator/concurrent/ConcurrentPollingManagerTest.class
+ru/mtuci/aggregator/cli/ConsoleAppTest.class
+ru/mtuci/aggregator/parser/JsonResponseParserTest.class
+ru/mtuci/aggregator/storage/CsvFileStorageTest.class
+ru/mtuci/aggregator/concurrent/PollingTaskTest.class
+ru/mtuci/aggregator/MainTest.class
+ru/mtuci/aggregator/service/AggregationServiceTest.class
+ru/mtuci/aggregator/testutil/MockApiProvider.class
+ru/mtuci/aggregator/storage/JsonFileStorageTest.class
+ru/mtuci/aggregator/model/AggregatedRecordTest.class

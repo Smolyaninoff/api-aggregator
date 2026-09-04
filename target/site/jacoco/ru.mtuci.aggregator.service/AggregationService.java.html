@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AggregationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">api-aggregator-stage1</a> &gt; <a href="index.source.html" class="el_package">ru.mtuci.aggregator.service</a> &gt; <span class="el_source">AggregationService.java</span></div><h1>AggregationService.java</h1><pre class="source lang-java linenums">package ru.mtuci.aggregator.service;
+
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import ru.mtuci.aggregator.api.ApiProvider;
+import ru.mtuci.aggregator.concurrent.ConcurrentPollingManager;
+import ru.mtuci.aggregator.config.AppConfig;
+import ru.mtuci.aggregator.model.AggregatedRecord;
+import ru.mtuci.aggregator.parser.JsonResponseParser;
+import ru.mtuci.aggregator.storage.DataStorage;
+import ru.mtuci.aggregator.storage.impl.CsvFileStorage;
+import ru.mtuci.aggregator.storage.impl.JsonFileStorage;
+
+public class AggregationService {
+    private final AppConfig config;
+
+    public AggregationService() {
+<span class="fc" id="L23">        this(new AppConfig());</span>
+<span class="fc" id="L24">    }</span>
+
+<span class="fc" id="L26">    public AggregationService(AppConfig config) {</span>
+<span class="fc" id="L27">        this.config = config;</span>
+<span class="fc" id="L28">    }</span>
+
+    public void aggregate(List&lt;String&gt; apiNames, String format, Path filePath, boolean append, int maxThreads) {
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        DataStorage storage = &quot;csv&quot;.equalsIgnoreCase(format) ? new CsvFileStorage() : new JsonFileStorage();</span>
+<span class="fc" id="L32">        ExecutorService executor = Executors.newFixedThreadPool(maxThreads);</span>
+
+        try {
+<span class="fc" id="L35">            storage.init(filePath, append);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">            for (String name : apiNames) {</span>
+<span class="fc" id="L37">                ApiProvider provider = config.getProvider(name);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">                if (provider == null) {</span>
+<span class="fc" id="L39">                    System.err.println(&quot;API '&quot; + name + &quot;' не найден.&quot;);</span>
+<span class="fc" id="L40">                    continue;</span>
+                }
+<span class="fc" id="L42">                executor.submit(() -&gt; {</span>
+                    try {
+<span class="fc" id="L44">                        System.out.println(&quot;[&quot; + Thread.currentThread().getName() + &quot;] Запрос к &quot; + provider.getName() + &quot;...&quot;);</span>
+<span class="fc" id="L45">                        String rawJson = provider.fetchRaw(provider.getDefaultParams());</span>
+<span class="fc" id="L46">                        Map&lt;String, Object&gt; data = JsonResponseParser.parse(rawJson);</span>
+<span class="fc" id="L47">                        storage.appendRecord(new AggregatedRecord(provider.getName(), data));</span>
+<span class="fc" id="L48">                        System.out.println(&quot;[&quot; + Thread.currentThread().getName() + &quot;] Сохранено: &quot; + provider.getName());</span>
+<span class="fc" id="L49">                    } catch (Exception e) {</span>
+<span class="fc" id="L50">                        System.err.println(&quot;[&quot; + Thread.currentThread().getName() + &quot;] Ошибка: &quot; + e.getMessage());</span>
+<span class="fc" id="L51">                    }</span>
+<span class="fc" id="L52">                });</span>
+<span class="fc" id="L53">            }</span>
+<span class="fc" id="L54">            executor.shutdown();</span>
+<span class="fc" id="L55">            executor.awaitTermination(60, TimeUnit.SECONDS);</span>
+<span class="fc" id="L56">            storage.close();</span>
+<span class="fc" id="L57">            System.out.println(&quot;Агрегация завершена.&quot;);</span>
+<span class="nc" id="L58">        } catch (Exception e) {</span>
+<span class="nc" id="L59">            System.err.println(&quot;Ошибка работы с файлом: &quot; + e.getMessage());</span>
+<span class="fc" id="L60">        }</span>
+<span class="fc" id="L61">    }</span>
+
+    public void startContinuous(List&lt;String&gt; apiNames, String format, Path filePath, boolean append, int maxThreads, int interval) {
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        DataStorage storage = &quot;csv&quot;.equalsIgnoreCase(format) ? new CsvFileStorage() : new JsonFileStorage();</span>
+<span class="nc" id="L65">        ConcurrentPollingManager manager = new ConcurrentPollingManager(storage, config);</span>
+
+<span class="nc" id="L67">        Runtime.getRuntime().addShutdownHook(new Thread(() -&gt; {</span>
+<span class="nc" id="L68">            System.out.println(&quot;\nСигнал остановки. Завершаем потоки...&quot;);</span>
+<span class="nc" id="L69">            manager.stop();</span>
+<span class="nc" id="L70">        }));</span>
+
+<span class="nc" id="L72">        manager.start(maxThreads, interval, apiNames, filePath, append);</span>
+<span class="nc" id="L73">        manager.waitForStopSignal();</span>
+<span class="nc" id="L74">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
